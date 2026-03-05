@@ -6,11 +6,19 @@ const database = new EventosDatabase()
 
 //listar eventos
 router.get('/', (req, res) => {
-   const { vagasMin } = req.query
+   const { vagasMin, modalidade } = req.query
    let filteredEventos = database.listarTodos();
+
+   if (modalidade && modalidade.toLowerCase() !== "presencial" && modalidade.toLowerCase() !== "ead") {
+      return res.status(404).json({ mensagem: "Modalidade não válida! Valores válidos: presencial ou ead" });
+   }
 
    if (vagasMin) {
       filteredEventos = filteredEventos.filter(x => x.vagasDisponiveis >= vagasMin)
+   }
+
+   if (modalidade) {
+      filteredEventos = filteredEventos.filter(x => x.modalidade === modalidade)
    }
 
    res.json(filteredEventos);
